@@ -1,39 +1,60 @@
-from sqlalchemy import create_engine
+
+from datetime import datetime
+from enum import Enum
+
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.declarative import declarative_base
+
 
 from app.config import DATABASE_URL
 
+Base = declarative_base()
+
+
+class StreamStatus(Enum):
+    PLANED = 'planed'
+    ACTIVE = 'active'
+    CLOSED = 'closed'
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String)
+    password = Column(String)
+    first_name = Column(String)
+    last_name = Column(String)
+    nickname = Column(String)
+    created_at = Column(String, default=datetime.utcnow())
+
+class Stream(Base):
+    __tablename__ = 'stream'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    title = Column(String)
+    topic = Column(String)
+    status = Column(String, default=StreamStatus.PLANED.value)
+    created_at = Column(String, default=datetime.utcnow())
+
+
+class AuthToken(Base):
+    __tablename__ = 'auth_token'
+
+    id = Column(Integer, primary_key=True)
+    token = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    created_at = Column(String, default=datetime.utcnow())
+
 def main():
     engine = create_engine(DATABASE_URL)
-    session = Session(bind=engine.connect())
+    engine.connect()
+    print(engine)
+    Base.metadata.create_all(engine)
 
-    session.execute("""create table users (
-    id integer not null primary key,
-    email varchar(256),
-    password varchar(256),
-    first_name varchar(256),
-    last_name varchar(256),
-    nickname varchar(256),
-    created_at varchar(256)  
-    );""")
 
-    session.execute("""create table auth_token (
-        id integer not null primary key,
-        token varchar(256),
-        user_id integer reference users,
-        created_at varchar(256)  
-        );""")
-
-    session.execute("""create table stream (
-        id integer not null primary key,
-        user_id integer reference users,
-        title varchar(256),
-        topic varchar(256),
-        status varchar(256),
-        created_at varchar(256) 
-        );""")
-
-    session.close()
 
 if __name__ == '__main__':
     main()

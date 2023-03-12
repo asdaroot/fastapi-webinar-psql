@@ -17,7 +17,8 @@ class StreamStatus(Enum):
 
 
 def connect_db():
-    engine = create_engine(DATABASE_URL, connect_args={'check_same_thread': False})
+    #engine = create_engine(DATABASE_URL, connect_args={'check_same_thread': False}) # for sqlite
+    engine = create_engine(DATABASE_URL, connect_args={})
     session = Session(bind=engine.connect())
     return session
 

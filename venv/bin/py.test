@@ -1,4 +1,4 @@
-#!/home/asda/python/fastapi-webinar/venv/bin/python
+#!/home/asda/python/fastapi-webinar-psql/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
